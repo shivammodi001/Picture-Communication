@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Speak Object Details</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body {
+        background: linear-gradient(135deg, #f8e1e1, #e0c1f4);
+        min-height: 100vh;
+        padding: 20px;
+        font-family: 'Poppins', sans-serif;
+      }
+
+      .header {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px);
+        padding: 15px 30px;
+        border-radius: 20px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 30px;
+        animation: bounce 2s infinite;
+      }
+
+      .header .logo {
+        color: #4b0082;
+        font-size: 2rem;
+        font-weight: 800;
+      }
+
+      h1 {
+        color: #4a5568;
+        text-align: center;
+        margin-bottom: 30px;
+        font-weight: 700;
+      }
+
+      .grid img {
+        border-radius: 20px;
+        transition: all 0.4s ease;
+        cursor: pointer;
+        background: rgba(255, 255, 255, 0.4);
+        backdrop-filter: blur(8px);
+        border: 2px solid transparent;
+      }
+
+      .grid img:hover {
+        transform: translateY(-10px) scale(1.05);
+        box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
+        border-image: linear-gradient(45deg, #6a11cb, #2575fc);
+        border-image-slice: 1;
+      }
+
+      .image-clicked {
+        animation: pulse 0.3s ease-in-out;
+        border-image: linear-gradient(45deg, #ff416c, #ff4b2b);
+        border-image-slice: 1;
+        border-width: 4px;
+      }
+
+      @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.08); }
+        100% { transform: scale(1); }
+      }
+
+      @keyframes bounce {
+        0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+        40% { transform: translateY(-12px); }
+        60% { transform: translateY(-6px); }
+      }
+
+      #speaking-indicator {
+        background: linear-gradient(45deg, #6a11cb, #2575fc);
+        border-radius: 25px;
+        padding: 10px 20px;
+        color: white;
+        font-weight: 600;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        display: none;
+        animation: rotate 1.5s linear infinite;
+      }
+
+      @keyframes rotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="max-w-6xl mx-auto">
+      <div class="header">
+        <h1 class="logo">Picture Communication</h1>
+      </div>
+
+      <h1 class="text-3xl sm:text-4xl font-extrabold">
+        Click an Object to Hear About It
+      </h1>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+        <!-- Images remain the same as your original code -->
+        <img src="1.png" alt="Bucket" data-name="Bucket" data-details="This is a bucket. It is used for carrying water or other liquids. Typically made of plastic or metal." />
+        <img src="2.png" alt="Pen" data-name="Pen" data-details="This is a pen. It is used for writing on paper. It usually contains ink and comes in different colors." />
+        <img src="3.png" alt="Notebook" data-name="Notebook" data-details="This is a notebook. Used for writing notes, school work, or journaling. Often has lined pages." />
+        <img src="4.png" alt="Bottle" data-name="Bottle" data-details="This is a bottle. Used to store water or other liquids. Usually made of plastic or glass." />
+        <img src="5.png" alt="Cup" data-name="Cup" data-details="This is a cup. Used for drinking beverages like tea, coffee, or water. Often made of ceramic or glass." />
+        <img src="6.png" alt="Spoon" data-name="Spoon" data-details="This is a spoon. Used for eating or serving food. Usually made of metal, plastic, or wood." />
+        <img src="7.png" alt="Chair" data-name="Chair" data-details="This is a chair. Used for sitting. It can be made of wood, metal, or plastic." />
+        <img src="8.png" alt="Table" data-name="Table" data-details="This is a table. Used to place items, eat meals, or work on. Can be made of wood, metal, or glass." />
+        <img src="9.png" alt="Lamp" data-name="Lamp" data-details="This is a lamp. Provides light in a room. Can use electricity or batteries." />
+        <img src="10.png" alt="Clock" data-name="Clock" data-details="This is a clock. Used for telling time. Can be analog or digital, and comes in different designs." />
+        <img src="11.png" alt="Phone" data-name="Phone" data-details="This is a phone. Used for communication, calling, texting, or browsing the internet." />
+        <img src="12.png" alt="Bag" data-name="Bag" data-details="This is a bag. Used for carrying items like books, clothes, or groceries. Can be made of cloth, leather, or plastic." />
+      </div>
+
+      <div id="speaking-indicator">Speaking...</div>
+    </div>
+
+    <script>
+      const images = document.querySelectorAll("img");
+      const speakingIndicator = document.getElementById("speaking-indicator");
+
+      images.forEach((img) => {
+        img.addEventListener("click", () => {
+          speechSynthesis.cancel();
+          img.classList.add("image-clicked");
+          setTimeout(() => img.classList.remove("image-clicked"), 500);
+
+          speakingIndicator.style.display = "block";
+
+          const message = `This is a ${img.dataset.name}. ${img.dataset.details}`;
+          const utterance = new SpeechSynthesisUtterance(message);
+
+          utterance.onend = () => {
+            speakingIndicator.style.display = "none";
+          };
+
+          speechSynthesis.speak(utterance);
+        });
+
+        img.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            img.click();
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
